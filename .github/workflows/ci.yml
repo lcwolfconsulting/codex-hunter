@@ -1,0 +1,25 @@
+name: CI Codex Hunter
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v4
+
+      - name: Test du Build Docker
+        run: |
+          docker build -t codex-hunter:test .
+
+      - name: Validation du Compose
+        run: |
+          docker compose config
+
+

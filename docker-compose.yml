@@ -1,0 +1,24 @@
+services:
+  frontend:
+    build: .
+    container_name: codex-frontend
+    ports:
+      - "8080:80"
+    restart: always
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: codex-db
+    environment:
+      POSTGRES_USER: codex_user
+      POSTGRES_PASSWORD: codex_password
+      POSTGRES_DB: codex_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
+
