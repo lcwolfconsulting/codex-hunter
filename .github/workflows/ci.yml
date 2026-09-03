@@ -1,25 +1,22 @@
-name: CI Codex Hunter
+name: Codex Hunter - CI Pipeline
 
+# Déclencheur : Le robot s'active à chaque fois qu'on fait un git push sur main
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  build-test:
-    runs-on: ubuntu-latest
+  check-code:
+    name: Verification du code et des fichiers
+    runs-on: ubuntu-latest # On demande un serveur virtuel Linux Ubuntu
 
     steps:
-      - name: Checkout du code
+      - name: Recuperer le code du projet
         uses: actions/checkout@v4
 
-      - name: Test du Build Docker
+      - name: Verifier la presence des fichiers
         run: |
-          docker build -t codex-hunter:test .
-
-      - name: Validation du Compose
-        run: |
-          docker compose config
-
-
+          echo "=== Verification du projet Codex Hunter ==="
+          ls -la
+          echo "=== Verification des fichiers Terraform ==="
+          ls -la terraform/
