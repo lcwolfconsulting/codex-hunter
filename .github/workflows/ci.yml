@@ -1,22 +1,36 @@
 name: Codex Hunter - CI Pipeline
 
-# Déclencheur : Le robot s'active à chaque fois qu'on fait un git push sur main
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  check-code:
-    name: Verification du code et des fichiers
-    runs-on: ubuntu-latest # On demande un serveur virtuel Linux Ubuntu
+  validate-infrastructure:
+    name: Validation Terraform
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Recuperer le code du projet
+      - name: Recuperer le code
         uses: actions/checkout@v4
 
-      - name: Verifier la presence des fichiers
+      - name: Installer Terraform sur le serveur du robot
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Initialiser et Valider la syntaxe Terraform
         run: |
-          echo "=== Verification du projet Codex Hunter ==="
-          ls -la
-          echo "=== Verification des fichiers Terraform ==="
-          ls -la terraform/
+          cd terraform
+          terraform init -backend=false
+          terraform validate
+
+  build-application:
+    name: Verification Build Docker
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Tester la construction de l'image Docker Frontend
+        run: |
+          echo "=== Verification du Dockerfile ==="
+          docker build -t codex-hunter-frontend:test .
