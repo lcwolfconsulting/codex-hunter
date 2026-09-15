@@ -9,18 +9,18 @@ terraform {
 
 provider "docker" {}
 
-# 1. Réseau isolé
+# Réseau isolé pour Codex Hunter
 resource "docker_network" "codex_net" {
   name = "codex_network"
 }
 
-# 2. Image Postgres
+# Image BDD PostgreSQL
 resource "docker_image" "postgres" {
   name         = "postgres:15-alpine"
   keep_locally = true
 }
 
-# 3. Conteneur BDD PostgreSQL
+# Conteneur Base de Données (cartes & scans Pokémon)
 resource "docker_container" "db" {
   image = docker_image.postgres.image_id
   name  = "codex-db-tf"
@@ -41,16 +41,13 @@ resource "docker_container" "db" {
   }
 }
 
-# 4. Image Frontend Codex Hunter
+# Image Frontend depuis GHCR
 resource "docker_image" "frontend_image" {
-  name = "codex-hunter-frontend:latest"
-  build {
-    context    = "${path.module}/.."
-    dockerfile = "Dockerfile"
-  }
+  name         = var.frontend_image_name
+  keep_locally = true
 }
 
-# 5. Conteneur Frontend
+# Conteneur Frontend (Interface Codex Hunter)
 resource "docker_container" "frontend" {
   image = docker_image.frontend_image.image_id
   name  = "codex-frontend-tf"
