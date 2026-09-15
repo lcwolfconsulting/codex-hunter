@@ -4,6 +4,11 @@ on:
   push:
     branches: [ "main" ]
 
+# Permissions necessaires pour publier l'image dans le registre GitHub (GHCR)
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   validate-infrastructure:
     name: Validation Terraform
@@ -13,24 +18,35 @@ jobs:
       - name: Recuperer le code
         uses: actions/checkout@v4
 
-      - name: Installer Terraform sur le serveur du robot
+      - name: Installer Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Initialiser et Valider la syntaxe Terraform
+      - name: Initialiser et Valider la syntaxe
         run: |
           cd terraform
           terraform init -backend=false
           terraform validate
 
-  build-application:
-    name: Verification Build Docker
+  build-and-push-image:
+    name: Build et Publication Image Docker
     runs-on: ubuntu-latest
 
     steps:
       - name: Recuperer le code
         uses: actions/checkout@v4
 
-      - name: Tester la construction de l'image Docker Frontend
-        run: |
-          echo "=== Verification du Dockerfile ==="
-          docker build -t codex-hunter-frontend:test .
+      - name: Connexion au registre GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build et Push de l'image Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/codex-hunter-frontend:latest
+            ghcr.io/${{ github.repository_owner }}/codex-hunter-frontend:${{ github.sha }}
