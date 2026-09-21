@@ -1,0 +1,20 @@
+# Configuration du Frontend Codex Hunter
+frontend:
+  repository: ghcr.io/lcwolfconsulting/codex-hunter-frontend
+  tag: latest
+  replicaCount: 1
+  port: 80
+  servicePort: 8080
+
+# Configuration de la Base de Données PostgreSQL
+database:
+  image: postgres:15-alpine
+  user: codex_user
+  password: codex_secret_pass
+  name: codex_hunter_db
+  port: 5432
+
+# Activation de l'Ingress
+ingress:
+  enabled: true
+  host: localhost

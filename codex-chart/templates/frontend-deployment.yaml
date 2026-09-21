@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-frontend
+  labels:
+    app: {{ .Release.Name }}-frontend
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-frontend
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: "{{ .Values.frontend.repository }}:{{ .Values.frontend.tag }}"
+        ports:
+        - containerPort: {{ .Values.frontend.port }}
+        env:
+        - name: DB_HOST
+          value: "{{ .Release.Name }}-postgres-service"
