@@ -14,14 +14,14 @@ provider "helm" {
 }
 
 resource "helm_release" "codex_hunter" {
-  name      = "codex-app-tf"
-  chart     = "../codex-chart"
-  namespace = "default"
+  name       = "codex-app-tf"
+  chart      = "../codex-chart"
+  namespace  = "default"
 
   values = [
     <<-EOT
     frontend:
-      replicaCount: 2
+      replicaCount: 3
     EOT
   ]
 }
